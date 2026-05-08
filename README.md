@@ -1,4 +1,4 @@
-# qase-robotframework
+# qase-xunit
 
 This is an example repository with tests in the `tests/examples/` directory. To run the tests :
 
