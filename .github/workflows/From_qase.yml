@@ -44,7 +44,6 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # Debug step - verify environment variables
       - name: Debug - Print Qase Configuration
         run: |
           echo "QASE_MODE: $QASE_MODE"
@@ -57,11 +56,12 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      # Debug step - check if Qase reporter is installed
-      - name: Debug - Check installed packages
+      - name: Debug - Verify Qase.TestOps.Xunit package
         run: |
-          echo "Checking for Qase reporter package..."
-          dotnet list package | grep -i qase || echo "Qase reporter not found!"
+          echo "Checking for NEW Qase.TestOps.Xunit package..."
+          dotnet list package | grep -i qase
+          echo ""
+          echo "⚠️ You should see 'Qase.TestOps.Xunit' NOT 'Qase.XUnit.Reporter'"
 
       - name: Build project
         run: dotnet build --no-restore --configuration Release
@@ -74,20 +74,13 @@ jobs:
           QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_API_BASE_URL: ${{ inputs.qase_api_base_url }}
           QASE_TESTOPS_RUN_COMPLETE: ${{ inputs.qase_run_complete }}
-        run: dotnet test --no-build --configuration Release --verbosity normal
+        run: |
+          echo "Starting tests with Qase reporting..."
+          dotnet test --no-build --configuration Release --verbosity normal
+          echo "✅ Tests completed - check above for Qase reporter output"
 
-      # Debug step - check for test output files
-      - name: Debug - Check for test results
+      - name: Debug - Verify Qase reporter ran
         if: always()
         run: |
-          echo "Looking for test result files..."
-          find . -name "*.trx" -o -name "TestResults" -type d
-          echo "Checking test output..."
-          ls -la TestResults/ || echo "No TestResults directory found"
-
-      - name: Upload test results (if test fails)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: '**/TestResults/**'
+          echo "Checking if Qase reporter output appeared in test logs..."
+          echo "You should see messages like 'Qase TestOps reporter' or 'Publishing results to Qase' above"
