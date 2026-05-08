@@ -74,7 +74,7 @@ jobs:
           QASE_TESTOPS_RUN_COMPLETE: ${{ inputs.qase_run_complete }}
         run: |
           echo "Starting tests with Qase reporter enabled..."
-          dotnet test --no-build --configuration Release --verbosity normal --logger "Qase.XUnit.Reporter"
+          dotnet test --no-build --configuration Release --verbosity normal
           echo "✅ Tests completed"
 
       - name: Debug - Check for Qase output
