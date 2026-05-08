@@ -37,15 +37,31 @@ jobs:
           QASE_TESTOPS_API_TOKEN: ${{ env.QASE_TESTOPS_API_TOKEN }}
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
+      # Debug step - verify environment variables
+      - name: Debug - Print Qase Configuration
+        run: |
+          echo "QASE_MODE: $QASE_MODE"
+          echo "QASE_TESTOPS_PROJECT: $QASE_TESTOPS_PROJECT"
+          echo "QASE_TESTOPS_RUN_ID: $QASE_TESTOPS_RUN_ID"
+          echo "QASE_API_BASE_URL: $QASE_API_BASE_URL"
+          echo "QASE_TESTOPS_RUN_COMPLETE: $QASE_TESTOPS_RUN_COMPLETE"
+          echo "Token exists: ${{ secrets.QASE_API_TOKEN != '' }}"
+
       - name: Restore dependencies
         run: dotnet restore
+
+      # Debug step - check if Qase reporter is installed
+      - name: Debug - Check installed packages
+        run: |
+          echo "Checking for Qase reporter package..."
+          dotnet list package | grep -i qase || echo "Qase reporter not found!"
 
       - name: Build project
         run: dotnet build --no-restore --configuration Release
@@ -60,9 +76,18 @@ jobs:
           QASE_TESTOPS_RUN_COMPLETE: ${{ inputs.qase_run_complete }}
         run: dotnet test --no-build --configuration Release --verbosity normal
 
+      # Debug step - check for test output files
+      - name: Debug - Check for test results
+        if: always()
+        run: |
+          echo "Looking for test result files..."
+          find . -name "*.trx" -o -name "TestResults" -type d
+          echo "Checking test output..."
+          ls -la TestResults/ || echo "No TestResults directory found"
+
       - name: Upload test results (if test fails)
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: '**/TestResults/**'
