@@ -56,12 +56,10 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Debug - Verify Qase.TestOps.Xunit package
+      - name: Debug - Verify Qase package
         run: |
-          echo "Checking for NEW Qase.TestOps.Xunit package..."
+          echo "Checking for Qase reporter package..."
           dotnet list package | grep -i qase
-          echo ""
-          echo "⚠️ You should see 'Qase.TestOps.Xunit' NOT 'Qase.XUnit.Reporter'"
 
       - name: Build project
         run: dotnet build --no-restore --configuration Release
@@ -75,12 +73,11 @@ jobs:
           QASE_API_BASE_URL: ${{ inputs.qase_api_base_url }}
           QASE_TESTOPS_RUN_COMPLETE: ${{ inputs.qase_run_complete }}
         run: |
-          echo "Starting tests with Qase reporting..."
-          dotnet test --no-build --configuration Release --verbosity normal
-          echo "✅ Tests completed - check above for Qase reporter output"
+          echo "Starting tests with Qase reporter enabled..."
+          dotnet test --no-build --configuration Release --verbosity normal --logger "Qase.XUnit.Reporter"
+          echo "✅ Tests completed"
 
-      - name: Debug - Verify Qase reporter ran
+      - name: Debug - Check for Qase output
         if: always()
         run: |
-          echo "Checking if Qase reporter output appeared in test logs..."
-          echo "You should see messages like 'Qase TestOps reporter' or 'Publishing results to Qase' above"
+          echo "Check the test output above for Qase reporter messages"
