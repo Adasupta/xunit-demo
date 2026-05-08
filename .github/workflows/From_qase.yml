@@ -26,7 +26,6 @@ env:
   QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
   QASE_TESTOPS_RUN_COMPLETE: true
   QASE_MODE: "testops"
-  QASE_TESTOPS_PLAN_ID: 5
 
 jobs:
   test:
@@ -55,4 +54,4 @@ jobs:
 
       - name: Run xUnit tests
         run: |
-          dotnet test --no-build --verbosity normal
+          QASE_MODE=testops dotnet test --no-build --verbosity normal
