@@ -6,6 +6,13 @@
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
+    <PropertyGroup>
+    <!-- Forces the runner to show logs instead of hiding them in a .log file -->
+    <TestingPlatformCaptureOutput>false</TestingPlatformCaptureOutput>
+    <!-- Explicitly tells .NET 9 to use the traditional VSTest mode if MTP is interfering -->
+    <UseVSTest>true</UseVSTest>
+</PropertyGroup>
+
 
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.2"/>

@@ -73,8 +73,7 @@ jobs:
           QASE_API_BASE_URL: ${{ inputs.qase_api_base_url }}
           QASE_TESTOPS_RUN_COMPLETE: ${{ inputs.qase_run_complete }}
         run: |
-          echo "Starting tests with Qase reporter enabled..."
-          dotnet test --no-build --configuration Release --verbosity normal
+          dotnet test --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
           echo "✅ Tests completed"
 
       - name: Debug - Check for Qase output
